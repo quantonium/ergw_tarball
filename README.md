@@ -8,9 +8,7 @@ erGW (GTP-U) local build and run environment
 
 - Create VRF to accept traffic from MME by executing the script vrf.script in current directory
 
-	IP addresses in this script file may need to change. In the example below, ens4 NIC will be interfacing with MME. 
-
-	It has address fd00:4888:2000:2062::121 The last line of th script has the gateway address through which VRF will talk to MME.
+	IP addresses in this script file might need to change. In the example below, ens4 NIC will be interfacing with MME.  It has address fd00:4888:2000:2062::121 The last line of the script has the gateway address through which VRF will talk to MME.
 
 
   	sudo ip link add vrf-irx type vrf table 10  
