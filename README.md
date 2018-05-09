@@ -8,9 +8,10 @@ erGW (GTP-U) local build and run environment. This environment is only tested fo
 - Clone this git repository.  It should download following files
 
 	rebar3- rebar3 binary to manage Erlang builds and packages  
-	esl-erlang_20.1-1~ubuntu~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package
-	vrf.script - Script to configure VRFs 
-	README.md - This README file containing instructions on how to configure and run erGW 
+	esl-erlang_20.1-1ubuntu~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
+	vrf.script - Script to configure VRFs   
+	README.md - This README file containing instructions on how to configure and run erGW  
+
 
 - Copy rebar3 from current directory to a directory that is in your PATH (~/bin as an example)
 
