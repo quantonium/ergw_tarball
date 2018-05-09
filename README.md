@@ -8,7 +8,7 @@ erGW (GTP-U) local build and run environment. This environment is only tested fo
 - Clone this git repository.  It should download following files
 
 	rebar3- rebar3 binary to manage Erlang builds and packages  
-	esl-erlang_20.1-1ubuntu~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
+	esl-erlang_20.1-1~~ubuntu~~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
 	vrf.script - Script to configure VRFs   
 	README.md - This README file containing instructions on how to configure and run erGW  
 
@@ -17,7 +17,7 @@ erGW (GTP-U) local build and run environment. This environment is only tested fo
 
 	cp rebar3 ~/bin
 
-- Bring the system upto date with latest package updates
+- Bring your Ubuntu system up to date with latest package updates
 
 	sudo apt update  
 	sudo apt upgrade  
@@ -45,15 +45,7 @@ Erlang package dependencies.
 
 	sudo cp -aL _build/default/rel/ergw-gtp-c-node /opt
 
-- Copy the config file that came with the package
-
-	sudo mkdir /etc/ergw-gtp-c-node
-
-	sudo cp ergw-gtp-c-node.config /etc/ergw-gtp-c-node/ergw-gtp-c-node.config
-
-  This above file might need changes based on your network topology.
-
-- Create VRF to accept traffic from MME by executing the script vrf.script in 
+- Create VRF device to accept traffic from MME by executing the script vrf.script in 
 current directory.  Run this script with three parameters.  The first parameter 
 should be the NIC name (like ens4) through which erGW will talk to MME.  The 
 second parameter is the IP address of the NIC (ens4 as an example). The third 
@@ -61,6 +53,55 @@ parameter is the network gateway through which traffic between MME and erGW will
 
 	./vrf_script <NIC identifier> <IP address of NIC> < Gateway IP Address>
 
+
+-Ensure that vrf-irx device is configured with the desired IP address by 
+running the following command:
+	
+	ifconfig vrf-irx
+
+
+- Copy the erGW config file that came with this repository
+
+	sudo mkdir /etc/ergw-gtp-c-node
+
+	sudo cp ergw-gtp-c-node.config /etc/ergw-gtp-c-node/ergw-gtp-c-node.config
+
+  This above file will need changes based on your network topology.  Following are the places that 
+will need to change to get erGW up and running:
+
+	{sockets,
+          [{epc, [{type, 'gtp-c'},
+                  {ip, {16#FD00,16#4888,16#2000,16#2062,0,0,0,16#121}},
+                  {netdev, "vrf-irx"}
+                 ]}
+          ]},
+ The line that contains "ip" should have the ipv6 address that was assigned 
+to vrf-irx earlier.  The values are comma separated and 16# indicates the values are base 16.
+
+
+{vrfs,  
+          [{sgi, [{pools,  [{{16#2222, 0, 0, 0, 16#1, 0, 0, 0}, {16#2222, 0, 0, 0, 16#1, 0, 0, 16#7}, 128}]},  
+                  {'MS-Primary-DNS-Server', {8,8,8,8}},  
+                  {'MS-Secondary-DNS-Server', {8,8,4,4}},  
+                  {'MS-Primary-NBNS-Server', {127,0,0,1}},  
+                  {'MS-Secondary-NBNS-Server', {127,0,0,1}}  
+                 ]}   
+          ]},  
+
+The line that contains "sgi" "pools" contains the range of ip addresses that will be assined to UE.
+
+
+ 	%% A/AAAA record alternatives  
+              {"topon.s1u.saegw.$ORIGIN", [{16#FD00,16#4888,16#2000,16#2051,16#524, 16#23,0,16#1F47}], []},  
+              {"topon.sx.saegw01.$ORIGIN", [{192,168,1,1}], []}  
+The line that contains "topon.s1u.saegw" should be updated to the IP address 
+of eNodeB.  This is the S1U interface.
+
+The line with "topon.sx.saegw01" should have the ip address of VPP (Sx interface).  This is
+internal communication between erGW and VPP and likely to not change.
+
+
+The line with "topon.sx.saegw01" should be pointing to Sx inerfavce
 - Start the erGW
 
 	sudo /opt/ergw-gtp-c-node/bin/ergw-gtp-c-node foreground
