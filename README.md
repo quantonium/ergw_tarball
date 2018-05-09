@@ -1,4 +1,7 @@
-erGW (GTP-U) local build and run environment. This environment is only tested for Ubuntu 16.04.  
+This repository contain the components to run erGW.  It interfaces with MME on one side through S11 interface and with VPP on the other side through Sx interface on the other side.  Together, erGW and VPP, creates a combined S-GW/PGW (sometimes also called a SAE-GW) which support the S11, S1-U and SGi 3GPP reference points.
+
+The setup required at least three NICs available on the system running Ubuntu 16.04.  It will also require
+a network range that can be assigned to UEs.
 
 - Go to /usr/src/quantonium (Create it if it doesn't already exist)
 
@@ -8,8 +11,9 @@ erGW (GTP-U) local build and run environment. This environment is only tested fo
 - Clone this git repository.  It should download following files
 
 	rebar3- rebar3 binary to manage Erlang builds and packages  
-	esl-erlang_20.1-1~~ubuntu~~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
+	esl-erlang_20.1-1ubuntu~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
 	vrf.script - Script to configure VRFs   
+	ergw-gtp-c-node.config - erGW config file
 	README.md - This README file containing instructions on how to configure and run erGW  
 
 
@@ -23,17 +27,17 @@ erGW (GTP-U) local build and run environment. This environment is only tested fo
 	sudo apt upgrade  
 
 
-- Install Erlang v20.1 The package file is included as part of this 
+- Install Erlang v20.1 The Ubuntu  package file for Erlang 20.1 is included as part of this 
 repository.  Originally it is from https://packages.erlang-solutions.com/erlang/ for 
 Ubuntu 16.04.  These three steps below need to be executed in sequence, without any 
 other package related operation on the system, so that apt can pull in all 
 Erlang package dependencies.
 
-	sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb  
+	sudo dpkg -i esl-erlang_20.1-1ubuntu~xenial_amd64.deb  
 	sudo apt -f install  
-	sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb 
+	sudo dpkg -i esl-erlang_20.1-1ubuntu~xenial_amd64.deb 
 
-- Untar ergw.tar file 
+- Untar ergw.tar file in current directory
 
 	tar xvf ergw.tar
 
@@ -43,7 +47,9 @@ Erlang package dependencies.
 
 - This repository has pre-built erGW binaries.  Copy the relevent erGW files to system directories
 
+	cd gw  
 	sudo cp -aL _build/default/rel/ergw-gtp-c-node /opt
+
 
 - Create VRF device to accept traffic from MME by executing the script vrf.script in 
 current directory.  Run this script with three parameters.  The first parameter 
@@ -51,7 +57,7 @@ should be the NIC name (like ens4) through which erGW will talk to MME.  The
 second parameter is the IP address of the NIC (ens4 as an example). The third 
 parameter is the network gateway through which traffic between MME and erGW will flow.
 
-	./vrf_script <NIC identifier> <IP address of NIC> < Gateway IP Address>
+	./vrf_script < NIC identifier > < IP address of NIC > < Gateway IP Address >
 
 
 -Ensure that vrf-irx device is configured with the desired IP address by 
@@ -88,7 +94,7 @@ to vrf-irx earlier.  The values are comma separated and 16# indicates the values
                  ]}   
           ]},  
 
-The line that contains "sgi" "pools" contains the range of ip addresses that will be assined to UE.
+The line that contains "sgi" "pools" has the range of ip addresses that will be assigned to UE.  It should be updated appropriately.
 
 
  	%% A/AAAA record alternatives  
@@ -102,8 +108,16 @@ internal communication between erGW and VPP and likely to not change.
 
 
 The line with "topon.sx.saegw01" should be pointing to Sx inerfavce
+
+
 - Start the erGW
 
 	sudo /opt/ergw-gtp-c-node/bin/ergw-gtp-c-node foreground
 
 
+- Run the following command for checking if erGW has successfully opened the ports 
+for communication with MME and VPP
+
+	sudo ss -anup \( sport = 2123 or sport = 8805 \)
+
+2123 port on vrf-irx device is used for communication with MME.  8805 is used to coomunicate with VPP.
