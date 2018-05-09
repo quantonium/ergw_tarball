@@ -1,6 +1,14 @@
+#!/bin/bash
+
+if [ "$#" -ne 3 ] ; then
+        echo "Usage: ./vrf.script <nic> <IP address> <GW IP address>"
+	echo "Exiting..."
+        exit 1
+fi
+
 sudo ip link add vrf-irx type vrf table 10
 sudo ip link set dev vrf-irx up
-sudo ip link set dev ens4 master vrf-irx
-sudo ip link set dev ens4 up
-sudo ip -6 addr add fd00:4888:2000:2062::121 dev vrf-irx
-sudo ip -6 route add table 10 default via FD00:4888:2000:2062:524:23:0:2
+sudo ip link set dev $1 master vrf-irx
+sudo ip link set dev $1 up
+sudo ip -6 addr add $2 dev vrf-irx
+sudo ip -6 route add table 10 default via $3
