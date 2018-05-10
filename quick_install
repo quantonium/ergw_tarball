@@ -1,0 +1,58 @@
+#!/bin/bash
+
+DIRECTORY="/usr/src/quantonium"
+GIT_TAR="ergw_tarball"
+ERL_FILE_PATH="/usr/bin/erl"
+SYS_CONFIG="/opt/ergw-gtp-c-node/releases/1.16.0/sys.config"
+VM_ARGS="/opt/ergw-gtp-c-node/releases/1.16.0/vm.args"
+
+echo "Creating $DIRECTORY directory..."
+mkdir -p $DIRECTORY
+if [ ! -d "$DIRECTORY" ]; then
+  echo "Unable to create $DIRECTORY. Exiting."
+  exit 1
+fi
+
+echo "Changing permissions on $DIRECTORY to be +rwx by $USER"
+sudo chmod go+rwx $DIRECTORY
+
+echo "Cloning Quantonium's $GIT_TAR repository"
+git clone https://github.com/quantonium/$GIT_TAR.git
+if [ ! -d "$GIT_TAR" ]; then
+  echo "Unable to clone $GIT_TAR. Exiting."
+  exit 1
+fi
+cd ergw_tarball
+echo -n "Copying rebar3 to ~/bin..."
+cp rebar3 ~/bin
+echo done
+
+echo "Updating packages on current system"
+#sudo apt update
+#sudo apt upgrade
+echo "Installing Erlang v 20.1"
+sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb
+sudo apt -f install
+sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb
+if [ ! -f $ERL_FILE_PATH ]; then
+	echo "Unable to install Erlang. Exiting."
+	exit 1
+fi
+echo "Erlang v20.1 installed"
+echo "Untarring erGW build environment"
+tar xf ergw0424.tar
+if [ ! -d "gw" ]; then
+  echo "Unable to untar erGW environment. Exiting."
+  exit 1
+fi
+echo "erGW build time environment coped
+cd gw
+echo "Installing erGW run time environment in /opt"
+sudo cp -aL _build/default/rel/ergw-gtp-c-node /opt
+sudo cp config/sys.config $SYS_CONFIG
+sudo cp config/vm.args $VM_ARGS
+if [ -f $VM_ARGS && -f $SYS_CONFIG ]; then
+	echo "erGW run time installation completed successfully"
+else
+	echo"erGW run time installation failure"
+fi
