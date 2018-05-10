@@ -2,8 +2,8 @@ erGW Setup
 ==========
 
 This repository contain the components to run erGW.  It interfaces with MME on one side 
-through S11 interface and with VPP on the other side through Sx interface on the other 
-side.  Together, erGW and VPP, creates a combined S-GW/PGW (sometimes also called a SAE-GW) 
+through S11 interface and with VPP on the other side through Sx interface.
+Together, erGW and VPP, creates a combined S-GW/PGW (sometimes also called a SAE-GW) 
 which support the S11, S1-U and SGi 3GPP reference points.
 
 Requirements
@@ -13,7 +13,7 @@ The setup requires at least three NICs available on the
 system running Ubuntu 16.04.  It will also require
 a network range that can be assigned to UEs.
 
-You will need super user privileges to run erGW.
+You will need super user privileges to follow the instructions below and run erGW.
 
 Setup
 ------
@@ -41,6 +41,7 @@ Setup
 	vrf.script - Script to configure VRFs   
 	ergw-gtp-c-node.config - erGW config file
 	README.md - This file containing instructions to configure and run erGW  
+	ergw0424.tar - A tar archive of build and run time environment of erGW.
 
 
 3. Copy rebar3 from current directory to a directory that is in your PATH (~/bin as an example)
@@ -74,18 +75,19 @@ package dependencies.
 
 	rebar3 release
 
-8. This repository has pre-built erGW binaries.  Copy the relevent erGW files to system directories
+8. This repository has pre-built erGW binaries.  Copy the relevent erGW files 
+to system directory
 
 	sudo cp -aL _build/default/rel/ergw-gtp-c-node /opt
 
 
-9. Create VRF device to accept traffic from MME by executing the script vrf.script in 
-current directory.  Run this script with three parameters.  The first parameter 
-should be the NIC name (like ens4) through which erGW will talk to MME.  The 
+9. Create VRF device to accept traffic from MME by executing the script vrf.script present in the parent directory.  Run this script with three parameters.  The first parameter 
+should be the NIC name (like ens4) through which erGW will talk to MME.  This NIC will become
+slave to VRF device that will be created as part of this step.  The 
 second parameter is the IP address of the NIC (ens4 as an example). The third 
 parameter is the network gateway through which traffic between MME and erGW will flow.
 
-	./vrf_script < NIC identifier > < IP address of NIC > < Gateway IP Address >
+	../vrf_script < NIC identifier > < IP address of NIC > < Gateway IP Address >
 
 
 Ensure that vrf-irx device is configured with the desired IP address by 
