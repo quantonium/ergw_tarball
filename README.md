@@ -9,9 +9,11 @@ which support the S11, S1-U and SGi 3GPP reference points.
 Requirements
 ------------
 
-The setup requires at least three NICs available on the system running Ubuntu 16.04.  It will also require
+The setup requires at least three NICs available on the 
+system running Ubuntu 16.04.  It will also require
 a network range that can be assigned to UEs.
 
+You will need super user privileges to run erGW.
 
 Setup
 ------
@@ -19,9 +21,20 @@ Setup
 1. Go to /usr/src/quantonium (Create it if it doesn't already exist)
 
 	cd /usr/src/quantonium
+    
+    This will likely need superuser privileges.  Make sure you have 
+    permission to create files in this directory.
 
 
-2. Clone this git repository.  It should download following files:
+2. Clone this git repository.  
+
+	git clone https://github.com/quantonium/ergw_tarball.git
+
+    It will create ergw_tarball directory.  
+
+	cd ergw_tarball
+
+    It should download following files:
 
 	rebar3- rebar3 binary to manage Erlang builds and packages  
 	esl-erlang_20.1-1\~ubuntu\~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
@@ -45,7 +58,8 @@ of this repository.  Originally it is
 from https://packages.erlang-solutions.com/erlang/ for 
 Ubuntu 16.04.  These three steps below need to be executed in sequence, without any 
 other package related operation on the system, so that apt can pull in all 
-Erlang package dependencies.
+Erlang package dependencies. Ignore any error messages from the first step relating to 
+package dependencies.
 
 	sudo dpkg -i esl-erlang_20.1-1\~ubuntu\~xenial_amd64.deb  
 	sudo apt -f install  
@@ -53,6 +67,7 @@ Erlang package dependencies.
 
 6. Untar ergw.tar file in current directory
 
+	cd gw  
 	tar xvf ergw.tar
 
 7. This step is not required unless you are changing erGW source file(s)
@@ -61,7 +76,6 @@ Erlang package dependencies.
 
 8. This repository has pre-built erGW binaries.  Copy the relevent erGW files to system directories
 
-	cd gw  
 	sudo cp -aL _build/default/rel/ergw-gtp-c-node /opt
 
 
@@ -74,10 +88,21 @@ parameter is the network gateway through which traffic between MME and erGW will
 	./vrf_script < NIC identifier > < IP address of NIC > < Gateway IP Address >
 
 
-10. Ensure that vrf-irx device is configured with the desired IP address by 
+Ensure that vrf-irx device is configured with the desired IP address by 
 running the following command:
 	
 	ifconfig vrf-irx
+
+Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you used to login
+
+	sudo ip -6 addr add <IPv6 vrf-irx address like fd00:4888:2000:2062::121> dev ens3
+
+
+10. Ensure the routes to MME and eNodeB are correctly set on your system
+
+	sudo ip route add  <MME_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128> via <YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2> dev <NIC facing MME like ens4>
+
+	sudo ip route add  <eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128> via <YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2> dev <NIC facing eNodeB like ens4>
 
 
 11. Copy the erGW config file that came with this repository
