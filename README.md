@@ -67,8 +67,8 @@ package dependencies.
 
 6. Untar ergw.tar file in current directory
 
+	tar xvf ergw0424.tar
 	cd gw  
-	tar xvf ergw.tar
 
 7. This step is not required unless you are changing erGW source file(s)
 
