@@ -1,10 +1,13 @@
 #!/bin/bash
 
 DIRECTORY="/usr/src/quantonium"
-GIT_TAR="ergw_tarball"
+ERGW_TARBALL="ergw_tarball"
 ERL_FILE_PATH="/usr/bin/erl"
 SYS_CONFIG="/opt/ergw-gtp-c-node/releases/1.16.0/sys.config"
 VM_ARGS="/opt/ergw-gtp-c-node/releases/1.16.0/vm.args"
+ERLANG_VER="1:20.1"
+
+
 
 echo "Creating $DIRECTORY directory..."
 sudo mkdir -p $DIRECTORY
@@ -18,27 +21,39 @@ sudo chmod go+rwx $DIRECTORY
 
 cd $DIRECTORY
 
+if [ -d "$ERGW_TARBALL" ]; then
+  echo "Removing existing clone of ergw repository. "
+  rm -rf $ERGW_TARBALL
+fi
+
 echo "Cloning Quantonium's $GIT_TAR repository"
-git clone https://github.com/quantonium/$GIT_TAR.git
-if [ ! -d "$GIT_TAR" ]; then
+git clone https://github.com/quantonium/$ERGW_TARBALL.git
+if [ ! -d "$ERGW_TARBALL" ]; then
   echo "Unable to clone $GIT_TAR. Exiting."
   exit 1
 fi
-cd ergw_tarball
+cd $ERGW_TARBALL
 echo -n "Copying rebar3 to ~/bin..."
 cp rebar3 ~/bin
 echo done
 
 echo "Updating packages on current system"
 sudo apt update
-sudo apt upgrade
-echo "Installing Erlang v 20.1"
-sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb
-sudo apt -f install
-sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb
+sudo apt -y upgrade
+echo "Checking if Erlang version 20.1 is already installed"
+x=`dpkg -l |grep esl-erlang |awk '{print $3}' |grep "20.1"`
+if [ "$x" = "$ERLANG_VER" ]; then
+    echo "Erlang version Matched"
+else
+    echo "Erlang version NOT Matched "
+    echo "Installing Erlang v 20.1"
+    sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb
+    sudo apt -f install
+    sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb
+fi;
 if [ ! -f $ERL_FILE_PATH ]; then
-	echo "Unable to install Erlang. Exiting."
-	exit 1
+   echo "Unable to install Erlang. Exiting."
+   exit 1
 fi
 echo "Erlang v20.1 installed"
 echo "Untarring erGW build environment"
