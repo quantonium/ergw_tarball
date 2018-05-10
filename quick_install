@@ -28,8 +28,8 @@ cp rebar3 ~/bin
 echo done
 
 echo "Updating packages on current system"
-#sudo apt update
-#sudo apt upgrade
+sudo apt update
+sudo apt upgrade
 echo "Installing Erlang v 20.1"
 sudo dpkg -i esl-erlang_20.1-1~ubuntu~xenial_amd64.deb
 sudo apt -f install
@@ -45,14 +45,16 @@ if [ ! -d "gw" ]; then
   echo "Unable to untar erGW environment. Exiting."
   exit 1
 fi
-echo "erGW build time environment coped
+echo "erGW build time environment copied"
 cd gw
 echo "Installing erGW run time environment in /opt"
 sudo cp -aL _build/default/rel/ergw-gtp-c-node /opt
+echo "Copying files"
 sudo cp config/sys.config $SYS_CONFIG
 sudo cp config/vm.args $VM_ARGS
-if [ -f $VM_ARGS && -f $SYS_CONFIG ]; then
-	echo "erGW run time installation completed successfully"
-else
-	echo"erGW run time installation failure"
+if [ ! -f $VM_ARGS ]; then
+	echo "erGW run time installation failure"
+	exit 1
 fi
+echo "erGW run time installation completed successfully"
+exit 0
