@@ -16,6 +16,8 @@ fi
 echo "Changing permissions on $DIRECTORY to be +rwx by $USER"
 sudo chmod go+rwx $DIRECTORY
 
+cd $DIRECTORY
+
 echo "Cloning Quantonium's $GIT_TAR repository"
 git clone https://github.com/quantonium/$GIT_TAR.git
 if [ ! -d "$GIT_TAR" ]; then
