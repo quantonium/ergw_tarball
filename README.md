@@ -102,9 +102,9 @@ Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you u
 
 10. Ensure the routes to MME and eNodeB are correctly set on your system
 
-	sudo ip route add  \<MME_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing MME like ens4\>
+	sudo ip route add  \<MME_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing MME like ens4\>
 
-	sudo ip route add  \<eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing eNodeB like ens4\>
+	sudo ip route add  \<eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing eNodeB like ens4\>
 
 
 11. Copy the erGW config file that came with this repository
@@ -152,12 +152,16 @@ Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you u
     internal communication between erGW and VPP and likely to not change.
 
 
-12. Start the erGW
+12. Copy the two ergw system config files to erGW run time location
+	sudo cp config/sys.config /opt/ergw-gtp-c-node/releases/1.16.0/
+	sudo cp config/vm.args /opt/ergw-gtp-c-node/releases/1.16.0/
+
+13. Start the erGW
 
 	sudo /opt/ergw-gtp-c-node/bin/ergw-gtp-c-node foreground
 
 
-13. Run the following command for checking if erGW has successfully opened the 
+14. Run the following command for checking if erGW has successfully opened the 
   ports for communication with MME and VPP
 
 	sudo ss -anup \( sport = 2123 or sport = 8805 \)
