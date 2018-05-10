@@ -152,8 +152,9 @@ Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you u
     internal communication between erGW and VPP and likely to not change.
 
 
-12. Copy the two ergw system config files to erGW run time location
-	sudo cp config/sys.config /opt/ergw-gtp-c-node/releases/1.16.0/
+12. Copy the two ergw system config files to erGW run time location  
+
+	sudo cp config/sys.config /opt/ergw-gtp-c-node/releases/1.16.0/  
 	sudo cp config/vm.args /opt/ergw-gtp-c-node/releases/1.16.0/
 
 13. Start the erGW
