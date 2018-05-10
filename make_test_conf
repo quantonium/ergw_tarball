@@ -1,34 +1,150 @@
-#!/bin/sh
+#!/bin/bash
 
-# Script to make ergw test configuration
+# make_test_conf - Make ergw test configuration
+#
+# Copyright (c) 2018, Quantonium Inc. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of the Quantonium nor the names of its contributors
+#     may be used to endorse or promote products derived from this software
+#     without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL QUANTONIUM BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 
-convert_to_ergw() {
+
+# Script to make ergw test configuration. This creates a configuration
+# for ILA of ergw where a pool of addresses with SIR prefix 2222:: is
+# used. The aaddress pool is 2222::1:0:0:0 to 2222::1:0:0:7. This
+# is compatible with the VPP GW test configuration. See:
+# https://github.com/quantonium/vpp/blob/feature/gtp-up/README.vpp
+#
+# This script assumes that there are two interfaces creates ens3 and
+# ens4, where ens3 is the adminstrative interface and ens4 is the interface
+# that connects to the MME. This is part of the overall assumption that
+# ens3, ens4, ans5, and ens6 are the interface that are used by the GTP GW
+# (ens5 and ens6 are used # by VPP). Note that ens4 is set to be a vrf slave.
+#
+# This takes five IPv6 address arguments:
+#     vfr_irx_addr - a local address for the vrf (ens) interface
+#     saegw_addr - SAEGW address
+#     gw_addr - default gateway on ens4
+#     mme_addr - address of the MME
+#     enodeb_addr - address
+#
+# Npte that this configuration does make a number of assumptions and
+# prerequisites (like the interfaces that are present). If needed it
+# can be edited for local configuration.
+#
+
+base_if="ens4"
+admin_if="ens3"
+
+convert_to_ergw()
+{
 	ergw_addr=`$QDIR/../ila/src/ila/test/ergw_addr $1`
 	ret=$?
 	echo $ergw_addr
 	return $ret
 }
 
-check_return() {
+check_return()
+{
 	if [ "$?" -ne 0 ]; then
 		echo "Address conversion failed for $2: $3"
 		exit 1
 	fi
 }
 
+# Create ergw configuration file and populate in /etc location. This
+# configures the vrf irx address and the saegw addresses in the file.
+#
+make_ergw_conf()
+{
+	vrf_irx_addr_string=`convert_to_ergw $1`
+	check_return $? $1 $vrf_irx_addr_string
 
-if [ "$#" -ne 2 ]; then
-        echo "Usage: make_test_conf <vrf-irx-addr> <saegw-addr>"
-        exit 1
+	saegw_addr_string=`convert_to_ergw $2`
+	check_return $? $2 $saegw_addr_string
+
+	sed "s/%vrf-irx-addr%/$vrf_irx_addr_string/g; s/%saegw-addr%/$saegw_addr_string/g" ergw-gtp-c-node.config.test_template > ergw-gtp-c-node.config.test
+
+	sudo cp ergw-gtp-c-node.config.test /etc/ergw-gtp-c-node/ergw-gtp-c-node.config
+}
+
+# Configure vrf
+#
+make_vrf_conf()
+{
+	vrf_irx_addr=$1
+	gw_addr=$2
+
+	sudo ip link add vrf-irx type vrf table 10
+	sudo ip link set dev vrf-irx up
+	sudo ip link set dev $base_if master vrf-irx
+	sudo ip link set dev $base_if up
+	sudo ip -6 addr add $vrf_irx_addr/128 dev vrf-irx
+	sudo ip -6 route add table 10 default via $gw_addr
+}
+
+# Make routes to mme and enodeb
+#
+make_routes()
+{
+	gw_addr=$1
+	mme_addr=$2
+	enodeb_addr=$3
+
+	sudo ip -6 route add $mme_addr via $gw_addr dev $base_if
+	sudo ip -6 route add $enodeb_addr via $gw_addr dev $base_if
+}
+
+# Workaround for vrf kernel issue. Configure the vrf address on another
+# interface than the one becoming a vrf slave so that we can bind to it
+#
+vrf_workaround()
+{
+	vrf_irx_addr=$1
+
+	sudo ip -6 addr add $vrf_irx_addr/128 dev $admin_if
+}
+
+if [ "$#" -ne 5 ]; then
+	echo "Usage: make_test_conf <vrf-irx-addr> <saegw-addr> <gw-addr> <mme-addr> <enodeb_addr>"
+	echo
+	exit 1
 fi
 
-vrf_irx_addr=`convert_to_ergw $1`
-check_return $? $1 $vrf_irx_addr
+if [ -z $QDIR ]; then
+	echo "Please set QDIR (like \"export QDIR=~/quantonium/install\")"
+	echo
+	exit 1
+fi
 
-saegw_addr=`convert_to_ergw $2`
-check_return $? $2 $saegw_addr
+vfr_irx_addr=$1
+saegw_addr=$2
+gw_addr=$3
+mme_addr=$4
+enodeb_addr=$5
 
-sed "s/%vrf-irx-addr%/$vrf_irx_addr/g; s/%saegw-addr%/$saegw_addr/g" ergw-gtp-c-node.config.test_template > ergw-gtp-c-node.config.test
-
-sudo cp ergw-gtp-c-node.config.test /etc/ergw-gtp-c-node/ergw-gtp-c-node.config
+make_ergw_conf $vfr_irx_addr $saegw_addr
+make_vrf_conf $vfr_irx_addr $gw_addr
+make_routes $gw_addr $mme_addr $enodeb_addr
+vrf_workaround $vrf_irx_addr
 
