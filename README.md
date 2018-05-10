@@ -20,6 +20,14 @@ ens4 - MME facing NIC used by erGW
 
 You will need super user privileges to follow the instructions below and run erGW.
 
+Quick Install
+-------------
+Download quick_install file from this repository on your system.  Change the 
+permission to make it executable.  Run the quick_install script.  It will 
+install ergw on your system.  Following steps 1-9 will be done by this script.
+
+quick_install requires superuser priveleges.
+
 Setup
 ------
 
@@ -85,8 +93,12 @@ to system directory
 
 	sudo cp -aL _build/default/rel/ergw-gtp-c-node /opt
 
+9. Copy the two ergw system config files to erGW run time location  
 
-9. Create VRF device to accept traffic from MME by executing the script vrf.script present in the parent directory.  Run this script with three parameters.  The first parameter 
+	sudo cp config/sys.config /opt/ergw-gtp-c-node/releases/1.16.0/  
+	sudo cp config/vm.args /opt/ergw-gtp-c-node/releases/1.16.0/
+
+10. Create VRF device to accept traffic from MME by executing the script vrf.script present in the parent directory.  Run this script with three parameters.  The first parameter 
 should be the NIC name (like ens4) through which erGW will talk to MME.  This NIC will become
 slave to VRF device that will be created as part of this step.  The 
 second parameter is the IP address of the NIC (ens4 as an example). The third 
@@ -105,14 +117,14 @@ Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you u
 	sudo ip -6 addr add <IPv6 vrf-irx address like fd00:4888:2000:2062::121> dev <IP address that you used to login, e.g. IP addrss on ens3>
 
 
-10. Ensure the routes to MME and eNodeB are correctly set on your system
+11. Ensure the routes to MME and eNodeB are correctly set on your system
 
 	sudo ip route add  \<MME_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing MME like ens4\>
 
 	sudo ip route add  \<eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing eNodeB like ens4\>
 
 
-11. Copy the erGW config file that came with this repository
+12. Copy the erGW config file that came with this repository
 
 	sudo mkdir /etc/ergw-gtp-c-node
 
@@ -156,11 +168,6 @@ Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you u
     The line with "topon.sx.saegw01" should have the ip address of VPP (Sx interface).  This is
     internal communication between erGW and VPP and likely to not change.
 
-
-12. Copy the two ergw system config files to erGW run time location  
-
-	sudo cp config/sys.config /opt/ergw-gtp-c-node/releases/1.16.0/  
-	sudo cp config/vm.args /opt/ergw-gtp-c-node/releases/1.16.0/
 
 13. Start the erGW
 
