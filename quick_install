@@ -7,7 +7,7 @@ SYS_CONFIG="/opt/ergw-gtp-c-node/releases/1.16.0/sys.config"
 VM_ARGS="/opt/ergw-gtp-c-node/releases/1.16.0/vm.args"
 
 echo "Creating $DIRECTORY directory..."
-mkdir -p $DIRECTORY
+sudo mkdir -p $DIRECTORY
 if [ ! -d "$DIRECTORY" ]; then
   echo "Unable to create $DIRECTORY. Exiting."
   exit 1
