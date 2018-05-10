@@ -95,21 +95,21 @@ running the following command:
 
 Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you used to login
 
-	sudo ip -6 addr add <IPv6 vrf-irx address like fd00:4888:2000:2062::121> dev ens3
+	sudo ip -6 addr add <IPv6 vrf-irx address like fd00:4888:2000:2062::121> dev <IP address that you used to login, e.g. IP addrss on ens3>
 
 
 10. Ensure the routes to MME and eNodeB are correctly set on your system
 
-	sudo ip route add  <MME_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128> via <YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2> dev <NIC facing MME like ens4>
+	sudo ip route add  \<MME_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing MME like ens4\>
 
-	sudo ip route add  <eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128> via <YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2> dev <NIC facing eNodeB like ens4>
+	sudo ip route add  \<eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<YOUR GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing eNodeB like ens4\>
 
 
 11. Copy the erGW config file that came with this repository
 
 	sudo mkdir /etc/ergw-gtp-c-node
 
-	sudo cp ergw-gtp-c-node.config /etc/ergw-gtp-c-node/ergw-gtp-c-node.config
+	sudo cp ../ergw-gtp-c-node.config /etc/ergw-gtp-c-node/ergw-gtp-c-node.config
 
    This above file will need changes based on your network topology.  Following 
    are the places that will need to change to get erGW up and running:
