@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Script to make ergw test configuration
+
+convert_to_ergw() {
+	ergw_addr=`$QDIR/../ila/src/ila/test/ergw_addr $1`
+	ret=$?
+	echo $ergw_addr
+	return $ret
+}
+
+check_return() {
+	if [ "$?" -ne 0 ]; then
+		echo "Address conversion failed for $2: $3"
+		exit 1
+	fi
+}
+
+
+if [ "$#" -ne 2 ]; then
+        echo "Usage: make_test_conf <vrf-irx-addr> <saegw-addr>"
+        exit 1
+fi
+
+vrf_irx_addr=`convert_to_ergw $1`
+check_return $? $1 $vrf_irx_addr
+
+saegw_addr=`convert_to_ergw $2`
+check_return $? $2 $saegw_addr
+
+sed "s/%vrf-irx-addr%/$vrf_irx_addr/g; s/%saegw-addr%/$saegw_addr/g" ergw-gtp-c-node.config.test_template > ergw-gtp-c-node.config.test
+
+sudo cp ergw-gtp-c-node.config.test /etc/ergw-gtp-c-node/ergw-gtp-c-node.config
+
