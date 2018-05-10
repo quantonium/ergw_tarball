@@ -47,9 +47,9 @@ Ubuntu 16.04.  These three steps below need to be executed in sequence, without 
 other package related operation on the system, so that apt can pull in all 
 Erlang package dependencies.
 
-	sudo dpkg -i esl-erlang_20.1-1ubuntu~xenial_amd64.deb  
+	sudo dpkg -i esl-erlang_20.1-1ubuntu\~xenial_amd64.deb  
 	sudo apt -f install  
-	sudo dpkg -i esl-erlang_20.1-1ubuntu~xenial_amd64.deb 
+	sudo dpkg -i esl-erlang_20.1-1ubuntu\~xenial_amd64.deb 
 
 6. Untar ergw.tar file in current directory
 
