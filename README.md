@@ -24,10 +24,10 @@ Setup
 2. Clone this git repository.  It should download following files:
 
 	rebar3- rebar3 binary to manage Erlang builds and packages  
-	esl-erlang_20.1-1ubuntu~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
+	esl-erlang_20.1-1\~ubuntu\~xenial_amd64.deb - Erlang 20.1 Ubuntu 16.04 package  
 	vrf.script - Script to configure VRFs   
 	ergw-gtp-c-node.config - erGW config file
-	README.md - This README file containing instructions on how to configure and run erGW  
+	README.md - This file containing instructions to configure and run erGW  
 
 
 3. Copy rebar3 from current directory to a directory that is in your PATH (~/bin as an example)
@@ -47,9 +47,9 @@ Ubuntu 16.04.  These three steps below need to be executed in sequence, without 
 other package related operation on the system, so that apt can pull in all 
 Erlang package dependencies.
 
-	sudo dpkg -i esl-erlang_20.1-1ubuntu\~xenial_amd64.deb  
+	sudo dpkg -i esl-erlang_20.1-1\~ubuntu\~xenial_amd64.deb  
 	sudo apt -f install  
-	sudo dpkg -i esl-erlang_20.1-1ubuntu\~xenial_amd64.deb 
+	sudo dpkg -i esl-erlang_20.1-1\~ubuntu\~xenial_amd64.deb 
 
 6. Untar ergw.tar file in current directory
 
