@@ -63,7 +63,7 @@
 	       "topon.sx.saegw01.$ORIGIN"},
 
 	      %% A/AAAA record alternatives
-	      {"topon.s1u.saegw.$ORIGIN", [{%saegw-addr%}], []},
+	      {"topon.s1u.saegw.$ORIGIN", [{%enodeb-addr%}], []},
 	      %%{"topon.s1u.saegw.$ORIGIN", [{192,168,17,12}], []},
 	      {"topon.sx.saegw01.$ORIGIN", [{192,168,1,1}], []}
 	     ]
