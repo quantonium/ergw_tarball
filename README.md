@@ -23,8 +23,18 @@ You will need super user privileges to follow the instructions below and run erG
 Quick Install
 -------------
 Download quick_install file from this repository on your system.  Change the 
-permission to make it executable.  Run the quick_install script.  It will 
-install ergw on your system.  Following steps 1-9 will be done by this script.
+permission to make it executable.  
+	
+	wget https://github.com/quantonium/ergw_tarball/blob/master/quick_install
+	chmod +x quick_install
+
+
+Run the quick_install script:
+
+	./quick_install
+
+
+It will install ergw on your system.  This script covers steps 1 - 9 below.
 
 quick_install requires superuser priveleges.
 
