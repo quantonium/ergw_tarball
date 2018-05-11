@@ -42,13 +42,12 @@ Configuring erGW
 ----------------
 
 make_test_conf script configures the IP addresses for erGW.  This takes 
-five IPv6 address arguments:  
+four IPv6 address arguments:  
 
      arg1 - vfr_irx_addr - a local address for the vrf (ens4) interface  
-     arg2 - MME address   
+     arg2 - eNodeB  address   
      arg3 - gw_addr - default gateway on ens4  
-     arg4 - mme_addr - address of the MME    
-     arg5 - enodeb_addr 
+     arg4 - MME address  
 
 Run the following command:  
 
