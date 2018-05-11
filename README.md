@@ -24,14 +24,14 @@ Quick Install
 -------------
 Download quick_install file from this repository on your system.  Change the 
 permission to make it executable.  
-	
-	wget https://github.com/quantonium/ergw_tarball/blob/master/quick_install
-	chmod +x quick_install
+
+	wget https://raw.githubusercontent.com/quantonium/ergw_tarball/master/quick_install -O /tmp/ergw_quick_install
+	chmod +x /tmp/ergw_quick_install
 
 
 Run the quick_install script:
 
-	./quick_install
+	/tmp/ergw_quick_install
 
 
 It will install ergw along with other required packages (like Erlang) on your system.  
