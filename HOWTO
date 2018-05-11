@@ -139,7 +139,7 @@ Workaround VRF kernel bug by assigning the vrf-irx address to the NIC that you u
 
 	sudo ip route add  \<MME_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing MME like ens4\>
 
-	sudo ip route add  \<eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F48/128\> via \<GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing eNodeB like ens4\>
+	sudo ip route add  \<eNodeB_ADDRESS like fd00:4888:2000:2051:524:23::1F47/128\> via \<GW ADDRESS like FD00:4888:2000:2062:524:23:0:2\> dev \<NIC facing eNodeB like ens4\>
 
 
 12. Copy the erGW config file that came with this repository
