@@ -51,7 +51,7 @@ four IPv6 address arguments:
 
 Run the following command:  
 
-	/usr/src/quantonium/ergw_tarball/make_test_conf arg1 arg2 arg3 arg4 arg5
+	/usr/src/quantonium/ergw_tarball/make_test_conf arg1 arg2 arg3 arg4  
 
 
 Running erGW
