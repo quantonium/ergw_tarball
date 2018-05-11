@@ -44,14 +44,15 @@ Configuring erGW
 make_test_conf script configures the IP addresses for erGW.  This takes 
 four IPv6 address arguments:  
 
-     arg1 - vfr_irx_addr - a local address for the vrf (ens4) interface  
-     arg2 - eNodeB  address   
-     arg3 - gw_addr - default gateway on ens4  
-     arg4 - MME address  
+     vfr_irx_addr - a local address for the vrf (ens4) interface
+     enodeb_addr = eNodeB  address
+     gw_addr - default gateway on ens4
+     mme_addr - MME address
 
 Run the following command:  
 
-	/usr/src/quantonium/ergw_tarball/make_test_conf arg1 arg2 arg3 arg4  
+	/usr/src/quantonium/ergw_tarball/make_test_conf <vrf_irx> \
+	     <enodeb_addr> <gw_addr> <mme_addr> 
 
 
 Running erGW
